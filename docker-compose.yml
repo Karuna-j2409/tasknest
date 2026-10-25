@@ -1,0 +1,19 @@
+# Optional: build and run TaskNest with one command
+#   docker compose up -d --build     (start)
+#   docker compose logs -f           (watch logs)
+#   docker compose down              (stop; data stays in the volume)
+services:
+  tasknest:
+    build: .
+    image: tasknest:1.0
+    container_name: tasknest
+    ports:
+      - "3000:3000"            # host:container
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - tasknest-data:/app/data   # SQLite file survives container restarts/removal
+    restart: unless-stopped
+
+volumes:
+  tasknest-data:

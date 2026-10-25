@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TaskNest - a simple task manager for students.">
+  <title>TaskNest | Student Task Manager</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+  <!-- ===================== NAVBAR ===================== -->
+  <nav class="navbar app-navbar">
+    <div class="container">
+      <span class="navbar-brand"><i class="bi bi-journal-check me-2"></i>TaskNest</span>
+      <span class="navbar-text d-none d-sm-inline">Plan your studies, one task at a time</span>
+    </div>
+  </nav>
+
+  <main class="container py-4">
+    <!-- ===================== STATS ===================== -->
+    <section class="row g-3 mb-4" aria-label="Task summary">
+      <div class="col-6 col-md">
+        <div class="stat-card"><span class="stat-label">Total</span><span class="stat-value" id="statTotal">0</span></div>
+      </div>
+      <div class="col-6 col-md">
+        <div class="stat-card stat-pending"><span class="stat-label">Pending</span><span class="stat-value" id="statPending">0</span></div>
+      </div>
+      <div class="col-6 col-md">
+        <div class="stat-card stat-progress"><span class="stat-label">In progress</span><span class="stat-value" id="statProgress">0</span></div>
+      </div>
+      <div class="col-6 col-md">
+        <div class="stat-card stat-done"><span class="stat-label">Completed</span><span class="stat-value" id="statCompleted">0</span></div>
+      </div>
+      <div class="col-12 col-md">
+        <div class="stat-card stat-overdue"><span class="stat-label">Overdue</span><span class="stat-value" id="statOverdue">0</span></div>
+      </div>
+    </section>
+
+    <div class="row g-4">
+      <!-- ===================== ADD TASK ===================== -->
+      <section class="col-lg-4">
+        <div class="panel">
+          <h2 class="panel-title"><i class="bi bi-plus-circle me-2"></i>Add a task</h2>
+          <form id="taskForm" novalidate>
+            <div class="mb-3">
+              <label for="title" class="form-label">Title *</label>
+              <input id="title" class="form-control" required minlength="3" maxlength="100" placeholder="e.g. Finish DBMS assignment">
+              <div class="invalid-feedback">Title must be 3–100 characters.</div>
+            </div>
+            <div class="mb-3">
+              <label for="subject" class="form-label">Subject</label>
+              <input id="subject" class="form-control" maxlength="50" placeholder="e.g. DBMS">
+            </div>
+            <div class="mb-3">
+              <label for="description" class="form-label">Description</label>
+              <textarea id="description" class="form-control" rows="3" maxlength="500" placeholder="Optional details"></textarea>
+            </div>
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label for="priority" class="form-label">Priority</label>
+                <select id="priority" class="form-select">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label for="dueDate" class="form-label">Due date</label>
+                <input id="dueDate" type="date" class="form-control">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-brand w-100"><i class="bi bi-plus-lg me-1"></i>Add Task</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- ===================== TASK LIST ===================== -->
+      <section class="col-lg-8">
+        <div class="panel">
+          <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+            <h2 class="panel-title mb-0 me-auto"><i class="bi bi-list-task me-2"></i>My tasks</h2>
+            <input id="searchInput" class="form-control form-control-sm filter-input" type="search" placeholder="Search..." aria-label="Search tasks">
+            <select id="statusFilter" class="form-select form-select-sm filter-input" aria-label="Filter by status">
+              <option value="">All statuses</option>
+              <option value="pending">Pending</option>
+              <option value="in-progress">In progress</option>
+              <option value="completed">Completed</option>
+            </select>
+            <select id="priorityFilter" class="form-select form-select-sm filter-input" aria-label="Filter by priority">
+              <option value="">All priorities</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+
+          <div id="taskList" class="task-list" aria-live="polite"></div>
+          <div id="emptyState" class="empty-state d-none">
+            <i class="bi bi-inbox"></i>
+            <p>No tasks found. Add your first task!</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    TaskNest · Node.js + Express + SQLite · Running in Docker
+  </footer>
+
+  <!-- ===================== EDIT MODAL ===================== -->
+  <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <form class="modal-content" id="editForm" novalidate>
+        <div class="modal-header">
+          <h2 class="modal-title fs-5" id="editModalTitle">Edit task</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editId">
+          <div class="mb-3">
+            <label for="editTitle" class="form-label">Title *</label>
+            <input id="editTitle" class="form-control" required minlength="3" maxlength="100">
+            <div class="invalid-feedback">Title must be 3–100 characters.</div>
+          </div>
+          <div class="mb-3">
+            <label for="editSubject" class="form-label">Subject</label>
+            <input id="editSubject" class="form-control" maxlength="50">
+          </div>
+          <div class="mb-3">
+            <label for="editDescription" class="form-label">Description</label>
+            <textarea id="editDescription" class="form-control" rows="3" maxlength="500"></textarea>
+          </div>
+          <div class="row g-2">
+            <div class="col-4">
+              <label for="editPriority" class="form-label">Priority</label>
+              <select id="editPriority" class="form-select">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+            <div class="col-4">
+              <label for="editStatus" class="form-label">Status</label>
+              <select id="editStatus" class="form-select">
+                <option value="pending">Pending</option>
+                <option value="in-progress">In progress</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+            <div class="col-4">
+              <label for="editDueDate" class="form-label">Due date</label>
+              <input id="editDueDate" type="date" class="form-control">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-brand">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================== TOAST ===================== -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="toast" class="toast align-items-center border-0" role="status" aria-live="polite" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body" id="toastMessage"></div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

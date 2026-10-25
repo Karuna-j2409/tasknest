@@ -1,0 +1,17 @@
+# Keep the image small and free of secrets / local data
+node_modules
+npm-debug.log*
+data
+*.db
+*.db-*
+.env
+.env.*
+!.env.example
+.git
+.gitignore
+tests
+coverage
+*.md
+.DS_Store
+docker-compose.yml
+.dockerignore
