@@ -2,7 +2,7 @@
 
 Module 4 · Practical 2 — a responsive **Student Task Management** web app built with **Node.js, Express.js and SQLite**, containerized with **Docker** and deployed to the **cloud (Render)**.
 
-🔗 **Live URL:** `https://<your-app-name>.onrender.com` *(update after deploying)*
+🔗 **Live URL:** `https://tasknest-r58h.onrender.com/`
 
 ## Features
 - Create, view, update and delete tasks (full **CRUD**) from a Bootstrap 5 interface
